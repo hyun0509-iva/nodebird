@@ -1,6 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button, Form, Input } from "antd";
-import Link from "next/dist/client/link";
+import Link from "next/link";
+import styled from "styled-components";
+
+const ButtonWrapper = styled.div`
+  margin-top: 10px;
+`;
 
 const LoginForm = () => {
   const [id, setId] = useState("");
@@ -12,6 +17,8 @@ const LoginForm = () => {
   const onChangePassWord = useCallback((e) => {
     setPassword(e.target.value);
   }, []);
+
+  const marginTop = useMemo(() => ({ marginTop: 10 }), []);
 
   return (
     <Form>
@@ -30,7 +37,7 @@ const LoginForm = () => {
           required
         />
       </div>
-      <div>
+      <div style={marginTop}>
         <Button type="primary" htmlType="submit" loading={false}>
           로그인
         </Button>
