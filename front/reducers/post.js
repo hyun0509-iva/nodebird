@@ -4,7 +4,7 @@ export const initialState = {
       id: 1,
       User: {
         id: 1,
-        nickname: "제로초",
+        nickname: "skyblue5030",
       },
       content: "첫 번째 게시글",
       Images: [
@@ -55,7 +55,7 @@ const dummyPost = {
 };
 // 데이터를 먼저 구성, 화면은 작성한 데이터나 데이터 변경을 기준으로 구성
 // 데이터 구조는 서버측과 합의해서 구성해야 나중에 수정할 일이 없음
-const postReducer = (state = initialState, action) => {
+const post = (state = initialState, action) => {
   switch (action.type) {
     case ADD_POST:
       return {
@@ -69,5 +69,5 @@ const postReducer = (state = initialState, action) => {
   }
 };
 
-export const postState = (state) => state.postReducer;
-export default postReducer;
+export const postState = (state) => state.post;
+export default post;

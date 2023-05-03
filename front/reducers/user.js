@@ -1,6 +1,6 @@
 export const initialState = {
   isLoggedIn: false,
-  user: null,
+  me: null,
   signUpData: {},
   loginData: {},
 };
@@ -14,24 +14,24 @@ export const logOutAction = () => ({
   type: "Log_OUT",
 });
 
-const userReducer = (state = initialState, action) => {
+const user = (state = initialState, action) => {
   switch (action.type) {
     case "LOG_IN":
       return {
         ...state,
         isLoggedIn: true,
-        user: action.data,
+        me: action.data,
       };
     case "Log_OUT":
       return {
         ...state,
         isLoggedIn: false,
-        user: null,
+        me: null,
       };
     default:
       return state;
   }
 };
 
-export const userState = state => state.userReducer;
-export default userReducer;
+export const userState = state => state.user;
+export default user;
