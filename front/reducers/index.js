@@ -1,49 +1,21 @@
-const initialState = {
-  user: {
-    isLoggedIn: false,
-    user: null,
-    signUpData: {},
-    loginData: {},
-  },
-  post: {
-    mainPosts: [],
-  },
-};
-
-// Action Creator
-export const loginAction = (data) => ({
-  type: "LOG_IN",
-  data,
-});
-
-export const logOutAction = () => ({
-  type: "Log_OUT",
-});
+import { HYDRATE } from "next-redux-wrapper";
+import { combineReducers } from "redux";
+import userReducer from "./user";
+import postReducer from "./post";
 
 // (이전 상태, 액션) => 다음 상태
-const rootReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "LOG_IN":
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          isLoggedIn: true,
-          user: action.data,
-        },
-      };
-    case "Log_OUT":
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          isLoggedIn: false,
-          user: null,
-        },
-      };
-    default:
-      return state;
-  }
-};
+const rootReducer = combineReducers({
+  index: (state = {}, action) => {
+    switch (action.type) {
+      case HYDRATE:
+        console.log("HYDRATE", action);
+        return { ...state, ...action.payload };
+      default:
+        return state;
+    }
+  },
+  userReducer,
+  postReducer,
+});
 
 export default rootReducer;
