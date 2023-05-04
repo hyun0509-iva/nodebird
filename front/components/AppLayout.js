@@ -7,6 +7,7 @@ import { Menu, Input, Row, Col } from "antd";
 import UserProfile from "./UserProfile";
 import LoginForm from "./LoginForm";
 import styled from "styled-components";
+import { Global } from "../styles/Global";
 
 const SearchInput = styled(Input.Search)`
   vertical-align: middle;
@@ -17,6 +18,7 @@ const AppLayout = ({ children }) => {
 
   return (
     <div>
+      <Global />
       <Menu mode="horizontal">
         <Menu.Item>
           <Link href="/">
