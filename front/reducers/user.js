@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const initialState = {
   isLoggedIn: false,
   me: null,
@@ -5,13 +7,37 @@ export const initialState = {
   loginData: {},
 };
 
-export const loginAction = (data) => ({
+export const loginAction = (data) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    dispatch(loginRequestAction());
+    axios
+      .post("/api/login")
+      .then((res) => dispatch(loginSucessAction(res.data)))
+      .catch((err) => dispatch(loginFailureAction(err)));
+  };
+};
+
+export const loginRequestAction = () => ({
+  type: "LOG_IN_QEQUEST",
+});
+export const loginSucessAction = (data) => ({
   type: "LOG_IN",
   data,
 });
+export const loginFailureAction = (data) => ({
+  type: "LOG_IN_FAILURE",
+  data
+});
 
-export const logOutAction = () => ({
-  type: "Log_OUT",
+export const logOutRequestAction = () => ({
+  type: "Log_OUT_REQUEST",
+});
+export const logOutSucessAction = () => ({
+  type: "Log_OUT_SUCCESS",
+});
+export const logOutFailureAction = () => ({
+  type: "Log_OUT_FAILURE",
 });
 
 const user = (state = initialState, action) => {
@@ -33,5 +59,5 @@ const user = (state = initialState, action) => {
   }
 };
 
-export const userState = state => state.user;
+export const userState = (state) => state.user;
 export default user;
