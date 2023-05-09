@@ -1,7 +1,6 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { userState } from "../reducers/user";
 import { Menu, Input, Row, Col } from "antd";
 
 import UserProfile from "./UserProfile";
@@ -14,7 +13,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout = ({ children }) => {
-  const { isLoggedIn } = useSelector(userState);
+  const { me } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -41,7 +40,7 @@ const AppLayout = ({ children }) => {
       </Menu>
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {me ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}

@@ -57,7 +57,7 @@ const dummyPost = {
 // 데이터 구조는 서버측과 합의해서 구성해야 나중에 수정할 일이 없음
 const post = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_POST:
+    case 'ADD_POST_SUCCESS':
       return {
         ...state,
         mainPosts: [dummyPost, ...state.mainPosts],
