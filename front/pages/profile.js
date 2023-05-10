@@ -1,10 +1,10 @@
-import Head from "next/dist/next-server/lib/head";
+import Head from "next/head";
 import AppLayout from "../components/AppLayout";
 import FollowList from "../components/FollowList";
 import NicknameEditForm from "../components/NicknameEditForm";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Router } from "next/router";
+import Router from "next/router";
 
 const Profile = () => {
   const { me } = useSelector((state) => state.user);

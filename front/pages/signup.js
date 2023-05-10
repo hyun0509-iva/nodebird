@@ -1,4 +1,4 @@
-import Head from "next/dist/next-server/lib/head";
+import Head from "next/head";
 import AppLayout from "../components/AppLayout";
 import { Button, Checkbox, Form, Input } from "antd";
 import { useInput } from "../hooks/useInput";
