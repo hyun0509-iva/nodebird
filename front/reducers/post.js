@@ -1,3 +1,5 @@
+import shortId from "shortid";
+
 export const initialState = {
   mainPosts: [
     {
@@ -38,6 +40,9 @@ export const initialState = {
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
+  addCommentLoading: false,
+  addCommentDone: false,
+  addCommentError: null,
 };
 
 export const ADD_POST_REQUEST = "ADD_POST_REQUEST";
@@ -52,25 +57,39 @@ export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
   data,
 });
+
 export const addComment = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
 
-const dummyPost = {
-  id: 2,
-  content: "더미데이터입니다.",
+const dummyPost = (data) => ({
+  id: shortId.generate(),
+  content: data,
   User: {
     id: 1,
     nickname: "skylove1004",
   },
   Images: [],
   Comments: [],
+});
+
+const dummyComment = (data) => {
+  console.log("dummyComment: ", data);
+  return {
+    id: shortId.generate(),
+    content: data,
+    User: {
+      id: 1,
+      nickname: "skylove1004",
+    },
+  };
 };
 
 // 데이터를 먼저 구성, 화면은 작성한 데이터나 데이터 변경을 기준으로 구성
 // 데이터 구조는 서버측과 합의해서 구성해야 나중에 수정할 일이 없음
 const post = (state = initialState, action) => {
+  console.log(action)
   switch (action.type) {
     case ADD_POST_REQUEST:
       return {
@@ -82,10 +101,10 @@ const post = (state = initialState, action) => {
     case ADD_POST_SUCCESS:
       return {
         ...state,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [dummyPost(action.data), ...state.mainPosts],
+        // 데이터을 앞에 추가해서 게시글이 위로 올라가게
         addPostLoading: false,
         addPostDone: true,
-        // 데이터을 앞에 추가해서 게시글이 위로 올라가게
         postAdded: true,
       };
     case ADD_POST_FAILURE:
@@ -101,14 +120,21 @@ const post = (state = initialState, action) => {
         addCommentDone: false,
         addCommentError: null,
       };
-    case ADD_COMMENT_SUCCESS:
+    case ADD_COMMENT_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        (v) => v.id === action.data.postId
+      );
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comments = [dummyComment(action.data.content), ...post.Comments];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
       return {
         ...state,
+        mainPosts,
         addCommentLoading: false,
         addCommentDone: true,
-        // 데이터을 앞에 추가해서 게시글이 위로 올라가게
-        postAdded: true,
       };
+    }
     case ADD_COMMENT_FAILURE:
       return {
         ...state,

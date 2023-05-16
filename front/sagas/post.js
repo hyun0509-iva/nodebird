@@ -36,6 +36,7 @@ function* addPost(action) {
 }
 
 function* addComment(action) {
+  console.log("addComment");
   try {
     // const result = yield call(addPostsApi, action.data); //요청의 결과
     yield delay(1000);
@@ -52,13 +53,15 @@ function* addComment(action) {
 }
 
 function* watchAddPost() {
+  console.log('watch_POST')
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
 
-function* watchAddCommentPost() {
+function* watchAddComment() {
+  console.log('watch_COMMENT')
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
 
 export default function* postSaga() {
-  yield all([fork(watchAddPost)], [fork(watchAddCommentPost)]);
+  yield all([fork(watchAddPost), fork(watchAddComment)]);
 }

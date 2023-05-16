@@ -2500,7 +2500,7 @@
   "resolved" "https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz"
   "version" "3.0.0"
 
-"shortid@^2.2.15":
+"shortid@^2.2.16":
   "integrity" "sha512-Ugt+GIZqvGXCIItnsL+lvFJOiN7RYqlGy7QE41O3YC1xbNSeDGIRO7xg2JJXIAj1cAGnOeC1r7/T9pgrtQbv4g=="
   "resolved" "https://registry.npmjs.org/shortid/-/shortid-2.2.16.tgz"
   "version" "2.2.16"
