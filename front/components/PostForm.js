@@ -7,14 +7,14 @@ import { useInput } from "../hooks/useInput";
 const PostForm = () => {
   const inputRef = useRef();
   const dispatch = useDispatch();
-  const { imagePaths, addPostDone } = useSelector(postState);
+  const { imagePaths, addPostDone, addPostLoading } = useSelector(postState);
   const [text, onChangeText, setText] = useInput("");
 
   useEffect(() => {
-    if(addPostDone) {
-      setText('')
+    if (addPostDone) {
+      setText("");
     }
-  }, [addPostDone])
+  }, [addPostDone]);
 
   const onClickImageUpload = useCallback(() => {
     inputRef.current.click();
@@ -40,8 +40,13 @@ const PostForm = () => {
       <div>
         <input type="file" ref={inputRef} multiple hidden />
         <Button onClick={onClickImageUpload}>이미지 업로드</Button>
-        <Button type="primary" style={{ float: "right" }} htmlType="submit">
-          쌕쌕
+        <Button
+          type="primary"
+          style={{ float: "right" }}
+          htmlType="submit"
+          loading={addPostLoading}
+        >
+          짹짹
         </Button>
         <div>
           {imagePaths.map((v) => {

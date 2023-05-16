@@ -13,18 +13,28 @@ import { PropTypes } from "prop-types";
 import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
 import PostCardContent from "./PostCardContent";
+import { REMOVE_POST_REQUEST, postState } from "../reducers/post";
+import { useDispatch } from "react-redux";
 
 const PostCard = ({ post }) => {
+  const dispatch = useDispatch();
   const [liked, setLiked] = useState(false);
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const id = useSelector(userState).me?.id;
-
+  const removePostLoading = useSelector(postState).removePostLoading;
+  
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
   }, []);
+  
   const onToggleCommentFormOpened = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
   }, []);
+  
+  const onRemovePost = useCallback(() => {
+    dispatch({type: REMOVE_POST_REQUEST, data: post.id})
+  }, [])
+
   return (
     <div>
       <Card
@@ -48,8 +58,8 @@ const PostCard = ({ post }) => {
                 {/* 현재 로그인한 유저가 게시글 유저랑 같다면 수정, 삭제 할 수 있게 */}
                 {id && post.User.id === id ? (
                   <>
-                    <Button type="">수정</Button>
-                    <Button type="">삭제</Button>
+                    <Button>수정</Button>
+                    <Button type="danger" onClick={onRemovePost} loading={removePostLoading}>삭제</Button>
                   </>
                 ) : (
                   <Button>신고</Button>

@@ -35,6 +35,7 @@ const CommentForm = ({ post }) => {
           style={{ position: "absolute", right: 0, bottom: -40, zIndex: 1 }}
           type="primary"
           htmlType="submit"
+          loading={addCommentLoading}
         >
           짹짹
         </Button>

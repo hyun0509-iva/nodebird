@@ -40,13 +40,24 @@ export const UNFOLLOW_REQUEST = "UNFOLLOW_REQUEST";
 export const UNFOLLOW_SUCCESS = "UNFOLLOW_SUCCESS";
 export const UNFOLLOW_FAILURE = "UNFOLLOW_FAILURE";
 
+export const ADD_POST_TO_ME = "ADD_POST_TO_ME"; // 내 게시글 추가 (내 게시글 표시를 위한)
+export const REMOVE_POST_OF_ME = "REMOVE_POST_OF_ME"; // 내 게시글 삭제
+
 const dummyUser = (data) => ({
   ...data,
-  id: 1,
+  id: 2,
   nickname: "skylove1004",
-  Posts: [],
-  Followings: [],
-  Flollowers: [],
+  Posts: [{ id: 1 }],
+  Followings: [
+    { nickname: "greenlove" },
+    { nickname: "redlove" },
+    { nickname: "bluelove" },
+  ],
+  Flollowers: [
+    { nickname: "greenlove" },
+    { nickname: "redlove" },
+    { nickname: "bluelove" },
+  ],
 });
 
 export const loginRequestAction = (data) => ({
@@ -140,6 +151,22 @@ const user = (state = initialState, action) => {
         ...state,
         signUpLoading: false,
         signUpError: action.error,
+      };
+    case ADD_POST_TO_ME:
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: [{ id: action.data }, ...state.me.Posts],
+        },
+      };
+    case REMOVE_POST_OF_ME:
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: state.me.Posts.filter(post => post.id !== action.data),
+        },
       };
     default:
       return state;
