@@ -1,5 +1,6 @@
 import shortId from "shortid";
 import produce from "immer";
+import { faker } from "@faker-js/faker";
 
 export const initialState = {
   mainPosts: [
@@ -56,6 +57,33 @@ export const initialState = {
   addCommentError: null,
 };
 
+// 게시글 더미 데이터 20개 추가
+initialState.mainPosts = initialState.mainPosts.concat(
+  Array(20)
+    .fill()
+    .map(() => ({
+      id: shortId.generate(),
+      User: {
+        id: shortId.generate(),
+        nickname: faker.internet.userName(),
+      },
+      content: faker.lorem.paragraph(),
+      Images: [
+        {
+          src: faker.image.url(),
+        },
+      ],
+      Comments: [
+        {
+          User: {
+            id: shortId.generate(),
+            nickname: faker.internet.userName(),
+          },
+          content: faker.lorem.sentence(10),
+        },
+      ],
+    }))
+);
 export const ADD_POST_REQUEST = "ADD_POST_REQUEST";
 export const ADD_POST_SUCCESS = "ADD_POST_SUCCESS";
 export const ADD_POST_FAILURE = "ADD_POST_FAILURE";
