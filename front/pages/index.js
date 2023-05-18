@@ -1,30 +1,54 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userState } from "../reducers/user";
-import { postState } from "../reducers/post";
+import { LOAD_POSTS_REQUEST, postState } from "../reducers/post";
 
 import AppLayout from "../components/AppLayout";
 import PostForm from "../components/PostForm";
 import PostCard from "../components/PostCard";
+import { useEffect } from "react";
 
 const Home = () => {
   const { me } = useSelector(userState);
-  const { mainPosts } = useSelector(postState);
+  const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector(postState);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({
+      type: LOAD_POSTS_REQUEST,
+    });
+  }, []);
+
+  // 스크롤 이벤트
+  useEffect(() => {
+    const onScroll = () => {
+      // 스크롤 위치
+      // 하단에서 300px 만큼 올려서 하단에서 요청하지 않고
+      // 300px 위에서 요청하도록 해서 부드럽게 인피니티 스크롤링되게
+      if (
+        window.scrollY + document.documentElement.clientHeight >
+        document.documentElement.scrollHeight - 300
+      ) {
+        if (hasMorePosts && !loadPostsLoading) {
+          //전체 게시글을 다 불러오지 않았다면, 게시글 불러오기.
+          dispatch({
+            type: LOAD_POSTS_REQUEST,
+          });
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [hasMorePosts, loadPostsLoading]);
+
   return (
     <AppLayout>
       {me && <PostForm />}
-      {mainPosts.map((post, idx) => <PostCard key={post.id} post={post} />)}
+      {mainPosts.map((post, idx) => (
+        <PostCard key={post.id} post={post} />
+      ))}
     </AppLayout>
   );
 };
-
-/* 
-  map을 통해 컴포넌트를 랜더링할 때는 key를 적어줘야하는데 
-  index로 사용하면 안된다. (안티패턴)
-  특히 데이터의 업데이트(추가, 삭제, 수정, 데이터의 순서가 변경)가 
-  되는 경우에는 index를 사용하면 원치않게 배열 요소가 지워질 수있다. 
-  이때는 index보다는 데이터 요소의 id를 사용한다. 
-  단, 데이터가 정적(변경되지 않음)일 경우에는 사용 가능 
-
-*/
 
 export default Home;

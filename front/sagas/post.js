@@ -1,5 +1,5 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import { all, delay, fork, put, takeLatest, throttle } from "redux-saga/effects";
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
@@ -7,12 +7,21 @@ import {
   ADD_POST_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
+  LOAD_POSTS_REQUEST,
+  LOAD_POSTS_FAILURE,
+  LOAD_POSTS_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
+  generateDummyPost,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
 import shortid from "shortid";
+
+function loadPostAPI(data) {
+  // 비동기 처리 함수는 일반함수로 정의
+  return axios.get("/api/posts", data);
+}
 
 function addPostAPI(data) {
   // 비동기 처리 함수는 일반함수로 정의
@@ -27,6 +36,21 @@ function addCommentAPI(data) {
   return axios.post(`/api/post/${data.postId}/comment`, data);
 }
 
+function* loadPosts(action) {
+  try {
+    // const result = yield call(loadPostAPI, action.data); //요청의 결과
+    yield delay(1000);
+    yield put({
+      type: LOAD_POSTS_SUCCESS,
+      data: generateDummyPost(10),
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 function* addPost(action) {
   console.log("addPosts");
@@ -92,6 +116,10 @@ function* addComment(action) {
   }
 }
 
+function* watchLoadPosts() {
+  yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
+}
+
 function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -106,5 +134,5 @@ function* watchAddComment() {
 
 
 export default function* postSaga() {
-  yield all([fork(watchAddPost), fork(watchRemovePost), fork(watchAddComment)]);
+  yield all([fork(watchLoadPosts), fork(watchAddPost), fork(watchRemovePost), fork(watchAddComment)]);
 }

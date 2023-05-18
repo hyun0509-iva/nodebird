@@ -3,63 +3,25 @@ import produce from "immer";
 import { faker } from "@faker-js/faker";
 
 export const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: "skyblue5030",
-      },
-      content: "첫 번째 게시글 #express #react",
-      Images: [
-        {
-          id: shortId.generate(),
-          src: "https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-        },
-        {
-          id: shortId.generate(),
-          src: "https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg",
-        },
-        {
-          id: shortId.generate(),
-          src: "https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg",
-        },
-      ],
-      Comments: [
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: "nero",
-          },
-          content: "우와 개정판이 나왔군요~",
-        },
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: "hero",
-          },
-          content: "얼른 사고싶어요~",
-        },
-      ],
-    },
-  ],
-  imagePaths: [], //이미지업로드시 추가됨
-  addPostLoading: false,
+  mainPosts: [],
+  imagePaths: [], // 이미지업로드시 추가됨
+  hasMorePosts: true, // 게시글을 더 불러올지,
+  loadPostsLoading: false, //첫 랜더링시 게시글 요청 시도
+  loadPostsDone: false, 
+  loadPostsError: null, 
+  addPostLoading: false, // 게시글 추가 시도
   addPostDone: false,
   addPostError: null,
-  removePostLoading: false,
+  removePostLoading: false, // 게시글 삭제 시도
   removePostDone: false,
   removePostError: null,
-  addCommentLoading: false,
+  addCommentLoading: false, // 댓글 추가 시도
   addCommentDone: false,
   addCommentError: null,
 };
 
-// 게시글 더미 데이터 20개 추가
-initialState.mainPosts = initialState.mainPosts.concat(
-  Array(20)
+export const generateDummyPost = (cnt) =>
+  Array(cnt)
     .fill()
     .map(() => ({
       id: shortId.generate(),
@@ -82,8 +44,12 @@ initialState.mainPosts = initialState.mainPosts.concat(
           content: faker.lorem.sentence(10),
         },
       ],
-    }))
-);
+    }));  
+
+export const LOAD_POSTS_REQUEST = "LOAD_POSTS_REQUEST";
+export const LOAD_POSTS_SUCCESS = "LOAD_POSTS_SUCCESS";
+export const LOAD_POSTS_FAILURE = "LOAD_POSTS_FAILURE";
+
 export const ADD_POST_REQUEST = "ADD_POST_REQUEST";
 export const ADD_POST_SUCCESS = "ADD_POST_SUCCESS";
 export const ADD_POST_FAILURE = "ADD_POST_FAILURE";
@@ -134,6 +100,21 @@ const dummyComment = (data) => {
 const post = (state = initialState, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
+      case LOAD_POSTS_REQUEST:
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
+        break;
+      case LOAD_POSTS_SUCCESS:
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
+        draft.mainPosts = action.data.concat(draft.mainPosts);
+        draft.hasMorePosts = draft.mainPosts.length < 50;
+        break;
+      case LOAD_POSTS_FAILURE:
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
+        break;
       case ADD_POST_REQUEST:
         draft.addPostLoading = true;
         draft.addPostDone = false;

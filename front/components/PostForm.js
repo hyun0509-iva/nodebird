@@ -65,7 +65,6 @@ const PostForm = () => {
           })}
         </div>
       </div>
-      PostForm
     </Form>
   );
 };
