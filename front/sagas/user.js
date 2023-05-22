@@ -1,5 +1,5 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import {
   FOLLOW_REQUEST,
   FOLLOW_SUCCESS,
@@ -38,7 +38,7 @@ function logOutApi() {
 }
 
 function signUpApi(data) {
-  return axios.post('/api/user', data);
+  return axios.post("http://localhost:3082/api/user", data);
 }
 
 function* follow(action) {
@@ -53,7 +53,7 @@ function* follow(action) {
     console.error(err);
     yield put({
       type: FOLLOW_FAILURE,
-      error: err.response.data,
+      error: err?.response.data,
     });
   }
 }
@@ -69,7 +69,7 @@ function* unfollow(action) {
     console.error(err);
     yield put({
       type: UNFOLLOW_FAILURE,
-      error: err.response.data,
+      error: err?.response.data,
     });
   }
 }
@@ -88,7 +88,7 @@ function* logIn(action) {
     console.error(err);
     yield put({
       type: LOG_IN_FAILURE,
-      error: err.response.data,
+      error: err?.response.data,
     });
   }
 }
@@ -105,21 +105,22 @@ function* logOut() {
     console.error(err);
     yield put({
       type: LOG_OUT_FAILURE,
-      error: err.response.data,
+      error: err?.response.data,
     });
   }
 }
 
-function* signUp() {
+function* signUp(action) {
   try {
-    yield delay(1000);
+    const result = yield call(signUpApi, action.data); //요청의 결과
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
     });
   } catch (err) {
     yield put({
       type: SIGN_UP_FAILURE,
-      error: err.response.data,
+      error: err?.response?.data ?? err,
     });
   }
 }

@@ -1,21 +1,44 @@
+import { useCallback, useEffect, useState } from "react";
 import Head from "next/head";
+import Router from "next/router";
 import AppLayout from "../components/AppLayout";
 import { Button, Checkbox, Form, Input } from "antd";
 import { useInput } from "../hooks/useInput";
 import styled from "styled-components";
-import { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { SIGN_UP_REQUEST, userState } from "../reducers/user";
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const { signUpLoading, signUpDone, signUpError } = useSelector(userState);
   const [email, onChangeEmail] = useInput("");
   const [nickname, OnChangeNickname] = useInput("");
   const [password, onChangePassword] = useInput("");
 
   const [passwordCheck, setPasswordCheck] = useState("");
+  const [isMatchPassword, setIsMatchPassword] = useState(false);
   const [isMatchPasswordError, setIsMatchPasswordError] = useState(false);
-  const onChangePasswordCheck = useCallback((e) => {
-    setPasswordCheck(e.target.value);
-    setIsMatchPasswordError(e.target.value !== password);
-  }, []);
+
+  useEffect(() => {
+    if (signUpDone) {
+      Router.push("/");
+    }
+  }, [signUpDone]);
+
+  useEffect(() => {
+    if(signUpError) {
+      alert(signUpError)
+    }
+  }, [signUpError])
+
+  const onChangePasswordCheck = useCallback(
+    (e) => {
+      setPasswordCheck(e.target.value);
+      setIsMatchPassword(e.target.value === password);
+      setIsMatchPasswordError(e.target.value !== password);
+    },
+    [password]
+  );
 
   const [isTermError, setIsTermError] = useState(false);
   const [term, setTerm] = useState("");
@@ -33,6 +56,12 @@ const Signup = () => {
       return setIsTermError(true);
     }
     console.log(email, nickname, password);
+    dispatch({
+      type: SIGN_UP_REQUEST,
+      data: { email, password, nickname },
+    });
+    setIsMatchPassword(false);
+    setIsMatchPasswordError(false);
   }, [password, passwordCheck, term]);
 
   return (
@@ -85,6 +114,9 @@ const Signup = () => {
               required
               onChange={onChangePasswordCheck}
             />
+            {isMatchPassword && (
+              <SucessMessage>비밀번호가 일치합니다.</SucessMessage>
+            )}
             {isMatchPasswordError && (
               <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>
             )}
@@ -97,8 +129,9 @@ const Signup = () => {
               <ErrorMessage>이용약관에 동의하셔야합니다.</ErrorMessage>
             )}
           </div>
+          {signUpDone && <SucessMessage>가입되었습니다.</SucessMessage>}
           <div>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={signUpLoading}>
               가입하기
             </Button>
           </div>
@@ -110,6 +143,10 @@ const Signup = () => {
 
 const ErrorMessage = styled.div`
   color: red;
+`;
+
+const SucessMessage = styled.div`
+  color: #12b886;
 `;
 
 export default Signup;
