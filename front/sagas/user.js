@@ -29,16 +29,16 @@ function unFollowApi(data) {
 
 function logInApi(data) {
   // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/login", data);
+  return axios.post("/api/user/login", data);
 }
 
 function logOutApi() {
   // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/login");
+  return axios.post("/api/user/logout");
 }
 
 function signUpApi(data) {
-  return axios.post("http://localhost:3082/api/user", data);
+  return axios.post("/api/user", data);
 }
 
 function* follow(action) {
@@ -75,14 +75,12 @@ function* unfollow(action) {
 }
 
 function* logIn(action) {
-  console.log("login");
   try {
     console.log("saga logIn");
-    // const result = yield call(logInApi, action.data); //요청의 결과
-    yield delay(1000);
+    const result = yield call(logInApi, action.data); //요청의 결과
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     console.error(err);
@@ -94,9 +92,8 @@ function* logIn(action) {
 }
 
 function* logOut() {
-  console.log("login");
   try {
-    // const result = yield call(logOutApi); //요청의 결과
+    yield call(logOutApi); //요청의 결과
     yield delay(1000);
     yield put({
       type: LOG_OUT_SUCCESS,

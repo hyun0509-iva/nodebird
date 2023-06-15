@@ -10,7 +10,7 @@ import { SIGN_UP_REQUEST, userState } from "../reducers/user";
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { signUpLoading, signUpDone, signUpError } = useSelector(userState);
+  const { me, signUpLoading, signUpDone, signUpError } = useSelector(userState);
   const [email, onChangeEmail] = useInput("");
   const [nickname, OnChangeNickname] = useInput("");
   const [password, onChangePassword] = useInput("");
@@ -20,16 +20,22 @@ const Signup = () => {
   const [isMatchPasswordError, setIsMatchPasswordError] = useState(false);
 
   useEffect(() => {
+    if (me && me.id) {
+      Router.replace("/");
+    }
+  }, [me && me.id]);
+
+  useEffect(() => {
     if (signUpDone) {
-      Router.push("/");
+      Router.replace("/");
     }
   }, [signUpDone]);
 
   useEffect(() => {
-    if(signUpError) {
-      alert(signUpError)
+    if (signUpError) {
+      alert(signUpError);
     }
-  }, [signUpError])
+  }, [signUpError]);
 
   const onChangePasswordCheck = useCallback(
     (e) => {
