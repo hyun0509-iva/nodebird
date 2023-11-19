@@ -1,5 +1,13 @@
 import axios from "axios";
-import { all, delay, fork, put, takeLatest, throttle } from "redux-saga/effects";
+import {
+  all,
+  call,
+  delay,
+  fork,
+  put,
+  takeLatest,
+  throttle,
+} from "redux-saga/effects";
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
@@ -25,7 +33,7 @@ function loadPostAPI(data) {
 
 function addPostAPI(data) {
   // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/post", data);
+  return axios.post("/api/post", { content: data });
 }
 
 function removePostAPI(data) {
@@ -54,20 +62,15 @@ function* loadPosts(action) {
 
 function* addPost(action) {
   console.log("addPosts");
-  const id = shortid.generate();
   try {
-    // const result = yield call(addPostsApi, action.data); //요청의 결과
-    yield delay(1000);
+    const result = yield call(addPostAPI, action.data); //요청의 결과
     yield put({
       type: ADD_POST_SUCCESS,
-      data: {
-        id,
-        content: action.data,
-      },
+      data: result.data,
     });
     yield put({
       type: ADD_POST_TO_ME,
-      data: id,
+      data: result.data.id,
     });
   } catch (err) {
     yield put({
@@ -102,11 +105,10 @@ function* removePost(action) {
 function* addComment(action) {
   console.log("addComment");
   try {
-    // const result = yield call(addPostsApi, action.data); //요청의 결과
-    yield delay(1000);
-    yield put({
+    const result = yield call(addCommentAPI, action.data); //요청의 결과
+    yield put({  
       type: ADD_COMMENT_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -124,7 +126,7 @@ function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
 
-function* watchRemovePost () {
+function* watchRemovePost() {
   yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
 
@@ -132,7 +134,11 @@ function* watchAddComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
 
-
 export default function* postSaga() {
-  yield all([fork(watchLoadPosts), fork(watchAddPost), fork(watchRemovePost), fork(watchAddComment)]);
+  yield all([
+    fork(watchLoadPosts),
+    fork(watchAddPost),
+    fork(watchRemovePost),
+    fork(watchAddComment),
+  ]);
 }

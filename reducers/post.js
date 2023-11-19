@@ -7,8 +7,8 @@ export const initialState = {
   imagePaths: [], // 이미지업로드시 추가됨
   hasMorePosts: true, // 게시글을 더 불러올지,
   loadPostsLoading: false, //첫 랜더링시 게시글 요청 시도
-  loadPostsDone: false, 
-  loadPostsError: null, 
+  loadPostsDone: false,
+  loadPostsError: null,
   addPostLoading: false, // 게시글 추가 시도
   addPostDone: false,
   addPostError: null,
@@ -44,7 +44,7 @@ export const generateDummyPost = (cnt) =>
           content: faker.lorem.sentence(10),
         },
       ],
-    }));  
+    }));
 
 export const LOAD_POSTS_REQUEST = "LOAD_POSTS_REQUEST";
 export const LOAD_POSTS_SUCCESS = "LOAD_POSTS_SUCCESS";
@@ -71,29 +71,6 @@ export const addComment = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
-
-const dummyPost = (data) => ({
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 2,
-    nickname: "skylove1004",
-  },
-  Images: [],
-  Comments: [],
-});
-
-const dummyComment = (data) => {
-  console.log("dummyComment: ", data);
-  return {
-    id: shortId.generate(),
-    content: data,
-    User: {
-      id: 2,
-      nickname: "skylove1004",
-    },
-  };
-};
 
 // 데이터를 먼저 구성, 화면은 작성한 데이터나 데이터 변경을 기준으로 구성
 // 데이터 구조는 서버측과 합의해서 구성해야 나중에 수정할 일이 없음
@@ -123,7 +100,7 @@ const post = (state = initialState, action) => {
       case ADD_POST_SUCCESS:
         draft.addPostLoading = false;
         draft.addPostDone = true;
-        draft.mainPosts.unshift(dummyPost(action.data));
+        draft.mainPosts.unshift(action.data);
         break;
       case ADD_POST_FAILURE:
         draft.addPostLoading = false;
@@ -151,23 +128,8 @@ const post = (state = initialState, action) => {
         draft.addCommentError = null;
         break;
       case ADD_COMMENT_SUCCESS: {
-        // const postIndex = state.mainPosts.findIndex(
-        //   (post) => post.id === action.data.postId
-        // );
-        // const post = { ...state.mainPosts[postIndex] };
-        // post.Comments = [dummyComment(action.data.content), ...post.Comments];
-        // const mainPosts = [...state.mainPosts];
-        // mainPosts[postIndex] = post;
-        // return {
-        //   ...state,
-        //   mainPosts,
-        //   addCommentLoading: false,
-        //   addCommentDone: true,
-        // };
-        const post = draft.mainPosts.findIndex(
-          (post) => post.id === action.data.postId
-        );
-        post.Comments.unshift(dummyComment(action.data.content));
+        const post = draft.mainPosts.find((post) => post.id === action.data.PostId);
+        post.Comments.unshift(action.data);
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;
