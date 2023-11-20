@@ -1,6 +1,8 @@
 import produce from "immer";
-
 export const initialState = {
+  loadMyInfoLoading: false, // 유저 정보 가져오기 시도중
+  loadMyInfoDone: false,
+  loadMyInfoError: null,
   followLoading: false, // 로그인 시도중
   followDone: false,
   followError: null,
@@ -23,6 +25,10 @@ export const initialState = {
   signUpData: {},
   loginData: {},
 };
+
+export const LOAD_MY_INFO_REQUEST = "LOAD_MY_INFO_REQUEST";
+export const LOAD_MY_INFO_SUCCESS = "LOAD_MY_INFO_SUCCESS";
+export const LOAD_MY_INFO_FAILURE = "LOAD_MY_INFO_FAILURE";
 
 export const LOG_IN_REQUEST = "LOG_IN_REQUEST";
 export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
@@ -80,6 +86,20 @@ export const logOutRequestAction = () => ({
 const user = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      case LOAD_MY_INFO_REQUEST:  // (현재 로그인한) 유저 정보
+        draft.loadMyInfoLoading = true;
+        draft.loadMyInfoDone = null;
+        draft.loadMyInfoError = false;
+        break;
+      case LOAD_MY_INFO_SUCCESS:
+        draft.loadMyInfoLoading = false;
+        draft.me = action.data; 
+        draft.loadMyInfoDone = true;
+        break;
+      case LOAD_MY_INFO_FAILURE:
+        draft.loadMyInfoLoading = false;
+        draft.loadMyInfoError = action.error;
+        break;
       case FOLLOW_REQUEST:
         draft.followLoading = true;
         draft.followError = null;
@@ -87,7 +107,7 @@ const user = (state = initialState, action) =>
         break;
       case FOLLOW_SUCCESS:
         draft.followLoading = false;
-        draft.me.Followings.push({id: action.data});
+        draft.me.Followings.push({ id: action.data });
         draft.followDone = true;
         break;
       case FOLLOW_FAILURE:
@@ -101,7 +121,9 @@ const user = (state = initialState, action) =>
         break;
       case UNFOLLOW_SUCCESS:
         draft.unfollowLoading = false;
-        draft.me.Followings = draft.me.Followings.filter(f => f.id !== action.data);
+        draft.me.Followings = draft.me.Followings.filter(
+          (f) => f.id !== action.data
+        );
         draft.unfollowDone = true;
         break;
       case UNFOLLOW_FAILURE:

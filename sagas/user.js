@@ -16,29 +16,14 @@ import {
   SIGN_UP_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_SUCCESS,
 } from "../reducers/user";
 
 function followApi(data) {
   // 비동기 처리 함수는 일반함수로 정의
   return axios.post("/api/follow", data);
-}
-function unFollowApi(data) {
-  // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/unfollow", data);
-}
-
-function logInApi(data) {
-  // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/user/login", data);
-}
-
-function logOutApi() {
-  // 비동기 처리 함수는 일반함수로 정의
-  return axios.post("/api/user/logout");
-}
-
-function signUpApi(data) {
-  return axios.post("/api/user", data);
 }
 
 function* follow(action) {
@@ -57,6 +42,11 @@ function* follow(action) {
     });
   }
 }
+
+function unFollowApi(data) {
+  // 비동기 처리 함수는 일반함수로 정의
+  return axios.post("/api/unfollow", data);
+}
 function* unfollow(action) {
   try {
     // const result = yield call(unFollowApi, action.data); //요청의 결과
@@ -72,6 +62,11 @@ function* unfollow(action) {
       error: err?.response.data,
     });
   }
+}
+
+function logInApi(data) {
+  // 비동기 처리 함수는 일반함수로 정의
+  return axios.post("/api/user/login", data);
 }
 
 function* logIn(action) {
@@ -91,6 +86,11 @@ function* logIn(action) {
   }
 }
 
+function logOutApi() {
+  // 비동기 처리 함수는 일반함수로 정의
+  return axios.post("/api/user/logout");
+}
+
 function* logOut() {
   try {
     yield call(logOutApi); //요청의 결과
@@ -107,6 +107,10 @@ function* logOut() {
   }
 }
 
+function signUpApi(data) {
+  return axios.post("/api/user", data);
+}
+
 function* signUp(action) {
   try {
     const result = yield call(signUpApi, action.data); //요청의 결과
@@ -120,6 +124,29 @@ function* signUp(action) {
       error: err?.response?.data ?? err,
     });
   }
+}
+
+function loadMyInfoApi() {
+  return axios.get("/api/user");
+}
+
+function* loadMyInfo(action) {
+  try {
+    const result = yield call(loadMyInfoApi, action.data); //요청의 결과
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data
+    });
+  } catch (error) {
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      error: err?.response?.data ?? err,
+    });
+  }
+}
+
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
 
 function* watchFollow() {
@@ -145,6 +172,7 @@ function* watchSignUp() {
 export default function* userSaga() {
   console.log("rootsaga 실행");
   yield all([
+    fork(watchLoadMyInfo),
     fork(watchFollow),
     fork(watchUnfollow),
     fork(watchLogIn),

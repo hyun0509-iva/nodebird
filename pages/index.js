@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { userState } from "../reducers/user";
+import { userState, LOAD_MY_INFO_REQUEST } from "../reducers/user";
 import { LOAD_POSTS_REQUEST, postState } from "../reducers/post";
 
 import AppLayout from "../components/AppLayout";
@@ -11,6 +11,13 @@ const Home = () => {
   const { me } = useSelector(userState);
   const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector(postState);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    });
+  }, []);
+
   useEffect(() => {
     dispatch({
       type: LOAD_POSTS_REQUEST,
