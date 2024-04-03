@@ -89,8 +89,8 @@ const PostCard = ({ post }) => {
             renderItem={(item) => (
               <li>
                 <Comment
-                  author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  author={item.User?.nickname}
+                  avatar={<Avatar>{item.User?.nickname[0]}</Avatar>}
                   content={item.content}
                 />
               </li>
@@ -107,7 +107,7 @@ PostCard.propTypes = {
     id: PropTypes.number,
     User: PropTypes.object,
     content: PropTypes.string,
-    createdAt: PropTypes.object,
+    createdAt: PropTypes.string,
     Comment: PropTypes.arrayOf(PropTypes.object),
     Image: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,

@@ -21,7 +21,6 @@ import {
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
-  generateDummyPost,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
 import shortid from "shortid";
@@ -46,11 +45,11 @@ function addCommentAPI(data) {
 
 function* loadPosts(action) {
   try {
-    // const result = yield call(loadPostAPI, action.data); //요청의 결과
+    const result = yield call(loadPostAPI, action.data); //요청의 결과
     yield delay(1000);
     yield put({
       type: LOAD_POSTS_SUCCESS,
-      data: generateDummyPost(10),
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -106,6 +105,7 @@ function* addComment(action) {
   console.log("addComment");
   try {
     const result = yield call(addCommentAPI, action.data); //요청의 결과
+    console.log({comment: result});
     yield put({  
       type: ADD_COMMENT_SUCCESS,
       data: result.data,
